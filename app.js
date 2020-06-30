@@ -30,7 +30,11 @@ const Article = mongoose.model("Article", articlesSchema)
 
 //TODO
 
-app.get("/articles", function(req, res) {
+////////////////////////////////// Requests targeting all the articles /////////////////////////////// 
+
+app.route("/articles")
+
+.get(function(req, res) {
     Article.find(function(err, foundArticles){
         if (!err) {
             res.send(foundArticles)
@@ -41,32 +45,50 @@ app.get("/articles", function(req, res) {
     })
 })
 
-app.post("/articles", function(req, res){
-console.log(req.body.title)
-console.log(req.body.content)
-
-const newArticle = new Article({
-    title: req.body.title,
-    content: req.body.content
-})
-newArticle.save(function(err){
-    if (!err) {
-        res.send("Success")
-    } else {
-        res.send(err)
-    }
-})
-})
-
-app.delete("/articles", function(req, res) {
-    Article.deleteMany(function(err){
+.post(function(req, res){
+    console.log(req.body.title)
+    console.log(req.body.content)
+    
+    const newArticle = new Article({
+        title: req.body.title,
+        content: req.body.content
+    })
+    newArticle.save(function(err){
         if (!err) {
             res.send("Success")
         } else {
             res.send(err)
         }
     })
-})
+    })
+    
+    .delete(function(req, res) {
+        Article.deleteMany(function(err){
+            if (!err) {
+                res.send("Success")
+            } else {
+                res.send(err)
+            }
+        })
+    })
+
+
+////////////////////////////////// Requests targeting one article /////////////////////////////// 
+
+app.route("/article/:articleTitle")
+
+.get(function(req, res){
+    
+    Article.findOne({title: req.params.articleTitle}, function(err, foundArticle){
+        if (foundArticle) {
+            res.send(foundArticle);
+        } else {
+            res.send("No articles found")
+        }
+    })
+});
+
+
 
 
 app.listen(3000, function() {
